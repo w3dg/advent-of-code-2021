@@ -10,6 +10,31 @@ First Released December 2015
 
 Get started with this year or the previous years' challenges here - https://adventofcode.com/
 
-### What is this?
+## What is this?
 
 My Advent of code solutions from 2021.
+
+## Usage
+
+Install dependencies ( [esm](https://www.npmjs.com/package/esm) )
+
+```
+$ npm install
+```
+
+- Run all days (if exists) at once
+
+```
+$ npm start
+```
+
+- Run any particular day
+
+```
+$ node -r esm ./dayX/dayX.js # replace X with the day number for eg. node -r esm ./day2/day2.js
+```
+
+### Credits
+
+- [KineticTactic](https://github.com/kinetictactic) for the script to run all days at once.
+  Also check out his solutions https://github.com/KineticTactic/AdventOfCode2021

@@ -9,4 +9,5 @@ function removeItemAll(arr, value) {
   }
   return arr;
 }
-module.exports = { removeItemAll };
+
+export default removeItemAll;

@@ -30,11 +30,9 @@ After following these instructions, you would have a horizontal position of 15 a
 Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 */
 
-const fs = require("fs");
+import { readFileSync } from "fs";
 
-const rawinput = fs
-  .readFileSync(__dirname + "/input.txt", "utf8")
-  .split("\r\n");
+const rawinput = readFileSync(__dirname + "/input.txt", "utf8").split("\r\n");
 
 const data = rawinput.map((line) => {
   const [direction, value] = line.split(" ");
@@ -59,7 +57,6 @@ function puzzle1() {
     }
   }
 
-  console.log(horizontal, depth);
   return horizontal * depth;
 }
 
@@ -109,7 +106,6 @@ function puzzle2() {
     }
   }
 
-  console.log(horizontal, depth);
   return horizontal * depth;
 }
 

@@ -43,11 +43,9 @@ In this example, there are 7 measurements that are larger than the previous meas
 How many measurements are larger than the previous measurement?
 */
 
-const fs = require("fs");
+import { readFileSync } from "fs";
 
-const rawinput = fs
-  .readFileSync(__dirname + "/input.txt", "utf8")
-  .split("\r\n");
+const rawinput = readFileSync(__dirname + "/input.txt", "utf8").split("\r\n");
 
 const data = rawinput.map((x) => parseInt(x));
 

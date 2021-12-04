@@ -1,76 +1,17 @@
-const fs = require("fs");
-const { removeItemAll } = require("./utils");
+import { readFileSync } from "fs";
 
-const randomOrderAndBoards = fs
-  .readFileSync(__dirname + "/input.txt", "utf8")
-  .split("\r\n\r\n");
+// CUSTOM BOARD CLASS FOR HANDLING BOARDS
+import Board from "./Board";
+
+const randomOrderAndBoards = readFileSync(
+  __dirname + "/input.txt",
+  "utf8"
+).split("\r\n\r\n");
 
 const randomOrder = randomOrderAndBoards[0].split(",").map((x) => +x); // parse first line as random order
 let rawboards = randomOrderAndBoards.splice(1); // leaving the first, all others are boards
 let allBoards = [];
 
-// CUSTOM BOARD CLASS FOR HANDLING BOARDS
-class Board {
-  constructor(rawboard) {
-    this.board = rawboard.split("\r\n").map((line) => {
-      let splitline = removeItemAll(line.split(" "), "").map((x) => +x);
-      return splitline;
-    });
-  }
-
-  getBoard() {
-    return this.board;
-  }
-
-  getSum() {
-    let sum = 0;
-    this.board.forEach((row) => {
-      row.forEach((col) => {
-        sum += col;
-      });
-    });
-    return sum;
-  }
-
-  checkBoardIfWinning() {
-    // Check each Row if any of them add to 0
-    for (let i = 0; i < this.board.length; i++) {
-      let rowsum = 0;
-      for (let j = 0; j < this.board[i].length; j++) {
-        rowsum += this.board[i][j];
-      }
-      if (rowsum == 0) {
-        rowsum = 0;
-        return true;
-      }
-    }
-
-    // Check each Column if any of them add to 0
-    for (let i = 0; i < this.board[0].length; i++) {
-      let colsum = 0;
-      for (let j = 0; j < this.board.length; j++) {
-        colsum += this.board[j][i];
-      }
-      if (colsum == 0) {
-        colsum = 0;
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  drawNumberOnBoard(number) {
-    // replace the number by a 0
-    this.board.forEach((row, i) => {
-      row.forEach((col, j) => {
-        if (col === number) {
-          this.board[i][j] = 0;
-        }
-      });
-    });
-  }
-}
 // SETUP ALL BOARDS
 for (const board of rawboards) {
   let brd = new Board(board);
@@ -81,18 +22,18 @@ function puzzle1() {
   let notFound = true;
   let winningBoard = null;
   let winningOrder = null;
-
+  // for each order called,
   for (const order of randomOrder) {
     if (!notFound) break;
-
+    // draw the number on the board
     for (const board of allBoards) {
       board.drawNumberOnBoard(order);
     }
-
+    // check if any of the boards are winning
     for (const board of allBoards) {
       if (!notFound) break;
       if (board.checkBoardIfWinning()) {
-        winningBoard = board;
+        winningBoard = board; // set winning board and order, break out of loop
         winningOrder = order;
         notFound = false;
         break;
@@ -105,7 +46,7 @@ function puzzle1() {
 function puzzle2() {
   let winningBoard = null;
   let winningOrder = null;
-
+  // for each order called, draw the number on the board and check if any of the boards are winning
   for (const order of randomOrder) {
     for (const board of allBoards) {
       board.drawNumberOnBoard(order);
@@ -113,9 +54,9 @@ function puzzle2() {
 
     for (const board of allBoards) {
       if (board.checkBoardIfWinning()) {
-        winningBoard = board;
+        winningBoard = board; // update winning board and order
         winningOrder = order;
-        allBoards.splice(allBoards.indexOf(board), 1); // remove that board from the list
+        allBoards.splice(allBoards.indexOf(board), 1); // remove that board from the array
       }
     }
   }
