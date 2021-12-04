@@ -12,7 +12,7 @@ export default class Board {
     let sum = 0;
     this.board.forEach((row) => {
       row.forEach((col) => {
-        sum += col;
+        sum += col != -1 ? col : 0;
       });
     });
     return sum;
@@ -25,13 +25,15 @@ export default class Board {
     let rowsum = this.board.map((r) =>
       r.reduce((prev, curr) => prev + curr, 0)
     );
-    if (rowsum.includes(0)) {
+    if (rowsum.includes(-5)) {
+      // 5 -1s in a row :p
       return true;
     }
 
     // Check each Column if any of them add to 0
     let colSum = this.board.reduce((a, b) => a.map((x, i) => x + b[i]));
-    if (colSum.includes(0)) {
+    if (colSum.includes(-5)) {
+      // 5 -1s in a col :p
       return true;
     }
   }
@@ -39,7 +41,7 @@ export default class Board {
   drawNumberOnBoard(number) {
     this.board.forEach((row, i) =>
       // if number is found at that row and col, set it to 0
-      row.forEach((col, j) => (col === number ? (this.board[i][j] = 0) : null))
+      row.forEach((col, j) => (col === number ? (this.board[i][j] = -1) : null))
     );
   }
 }
