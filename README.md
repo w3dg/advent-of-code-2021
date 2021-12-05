@@ -14,7 +14,7 @@ Get started with this year or the previous years' challenges here - https://adve
 
 My Advent of code solutions from 2021.
 
-## Usage
+## Run solutions
 
 Install dependencies ( [esm](https://www.npmjs.com/package/esm) )
 
@@ -32,6 +32,14 @@ $ npm start
 
 ```
 $ node -r esm ./dayX/dayX.js # replace X with the day number for eg. node -r esm ./day2/day2.js
+```
+
+## Starting out for a new day
+
+Copy the template directory and rename
+
+```
+$ cp -R template/ dayX
 ```
 
 ### Credits
