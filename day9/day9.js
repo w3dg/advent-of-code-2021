@@ -1,11 +1,11 @@
 import { readFileSync } from "fs";
 
-import { Point } from "./utils";
+import { Point, traverseNearby } from "./utils";
 
 // const data = readFileSync(__dirname + "/sample.txt", "utf8").split("\r\n");
 const data = readFileSync(__dirname + "/input.txt", "utf8").split("\r\n");
 const dataMatrix = data.map((row) => row.split("").map((x) => +x));
-let heightMapMatrix = [];
+const heightMapMatrix = [];
 
 for (let i = 0; i < dataMatrix.length; i++) {
   let temp = [];
@@ -16,8 +16,9 @@ for (let i = 0; i < dataMatrix.length; i++) {
   heightMapMatrix.push(temp);
 }
 
+const lowPoints = [];
+
 function puzzle1() {
-  const lowPoints = [];
   // if right, left, top bottom whatever available exists, then if its lowest than all of them, then its a low point
 
   for (let i = 0; i < heightMapMatrix.length; i++) {
@@ -51,7 +52,31 @@ function puzzle1() {
   return totalRiskLevel;
 }
 
-function puzzle2() {}
+function puzzle2() {
+  // start at each lowest point and go in all possible directions until you hit a 9
+  // add every non traversed point to a set/array
+
+  const originalMap = heightMapMatrix;
+
+  let basinSizes = [];
+  lowPoints.forEach((lowPoint) => {
+    const newHeightMap = traverseNearby(lowPoint, originalMap);
+    const pointsInBasin = newHeightMap
+      .flat()
+      .filter((point) => point.traversed);
+
+    //* SOMETHING HERE, ITS ADDING THE PREVIOUS SIZE AS WELL>>???
+    basinSizes.push(pointsInBasin.length);
+  });
+
+  basinSizes = basinSizes
+    .map((ele, i) => {
+      return i === 0 ? ele : basinSizes[i] - basinSizes[i - 1];
+    })
+    .sort((a, b) => b - a);
+  // return the product of largest 3 basins
+  return basinSizes[0] * basinSizes[1] * basinSizes[2];
+}
 
 console.log("Answer to puzzle 1 with the input data is", puzzle1());
 console.log("Answer to puzzle 2 with the input data is", puzzle2());
