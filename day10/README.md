@@ -1,77 +1,110 @@
-# Day 9: Smoke Basin
+# Day 10: Syntax Scoring
 
-These caves seem to be lava tubes. Parts are even still volcanically active; small hydrothermal vents release smoke into the caves that slowly settles like rain.
+You ask the submarine to determine the best route out of the deep-sea cave, but it only replies:
 
-If you can model how the smoke flows through the caves, you might be able to avoid it and be that much safer. The submarine generates a heightmap of the floor of the nearby caves for you (your puzzle input).
+Syntax error in navigation subsystem on line: all of them
+All of them?! The damage is worse than you thought. You bring up a copy of the navigation subsystem (your puzzle input).
 
-Smoke flows to the lowest point of the area it's in. For example, consider the following heightmap:
+The navigation subsystem syntax is made of several lines containing chunks. There are one or more chunks on each line, and chunks contain zero or more other chunks. Adjacent chunks are not separated by any delimiter; if one chunk stops, the next chunk (if any) can immediately start. Every chunk must open and close with one of four legal pairs of matching characters:
 
 ```
-2199943210
-3987894921
-9856789892
-8767896789
-9899965678
+If a chunk opens with (, it must close with ).
+If a chunk opens with [, it must close with ].
+If a chunk opens with {, it must close with }.
+If a chunk opens with <, it must close with >.
 ```
 
-Each number corresponds to the height of a particular location, where 9 is the highest and 0 is the lowest a location can be.
+So, () is a legal chunk that contains no other chunks, as is []. More complex but valid chunks include ([]), {()()()}, <([{}])>, [<>({}){}[([])<>]], and even (((((((((()))))))))).
 
-Your first goal is to find the low points - the locations that are lower than any of its adjacent locations. Most locations have four adjacent locations (up, down, left, and right); locations on the edge or corner of the map have three or two adjacent locations, respectively. (Diagonal locations do not count as adjacent.)
+Some lines are incomplete, but others are corrupted. Find and discard the corrupted lines first.
 
-In the above example, there are four low points, all highlighted: two are in the first row (a 1 and a 0), one is in the third row (a 5), and one is in the bottom row (also a 5). All other locations on the heightmap have some lower adjacent location, and so are not low points.
+A corrupted line is one where a chunk closes with the wrong character - that is, where the characters it opens and closes with do not form one of the four legal pairs listed above.
 
-The risk level of a low point is 1 plus its height. In the above example, the risk levels of the low points are 2, 1, 6, and 6. The sum of the risk levels of all low points in the heightmap is therefore 15.
+Examples of corrupted chunks include (], {()()()>, (((()))}, and <([]){()}[{}]). Such a chunk can appear anywhere within a line, and its presence causes the whole line to be considered corrupted.
 
-Find all of the low points on your heightmap. What is the sum of the risk levels of all low points on your heightmap?
+For example, consider the following navigation subsystem:
+
+```
+[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<{}[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]{}
+[[<[([]))<([[{}[[()]]]
+[{[{({}]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<{}))><([]([]()
+<{([([[(<>()){}]>(<<{{
+<{([{{}}[<[[[<>{}]]]>[]]
+```
+Some of the lines aren't corrupted, just incomplete; you can ignore these lines for now. The remaining five lines are corrupted:
+
+```
+{([(<{}[<>[]}>{[]{[(<()> - Expected ], but found } instead.
+[[<[([]))<([[{}[[()]]] - Expected ], but found ) instead.
+[{[{({}]{}}([{[{{{}}([] - Expected ), but found ] instead.
+[<(<(<(<{}))><([]([]() - Expected >, but found ) instead.
+<{([([[(<>()){}]>(<<{{ - Expected ], but found > instead.
+```
+Stop at the first incorrect closing character on each corrupted line.
+
+Did you know that syntax checkers actually have contests to see who can get the high score for syntax errors in a file? It's true! To calculate the syntax error score for a line, take the first illegal character on the line and look it up in the following table:
+
+```
+): 3 points.
+]: 57 points.
+}: 1197 points.
+>: 25137 points.
+```
+
+In the above example, an illegal ) was found twice (2*3 = 6 points), an illegal ] was found once (57 points), an illegal } was found once (1197 points), and an illegal > was found once (25137 points). So, the total syntax error score for this file is 6+57+1197+25137 = 26397 points!
+
+Find the first illegal character in each corrupted line of the navigation subsystem. What is the total syntax error score for those errors?
+
+Your puzzle answer was 299793.
 
 # Part Two
 
-Next, you need to find the largest basins so you know what areas are most important to avoid.
+Now, discard the corrupted lines. The remaining lines are incomplete.
 
-A basin is all locations that eventually flow downward to a single low point. Therefore, every low point has a basin, although some basins are very small. Locations of height 9 do not count as being in any basin, and all other locations will always be part of exactly one basin.
+Incomplete lines don't have any incorrect characters - instead, they're missing some closing characters at the end of the line. To repair the navigation subsystem, you just need to figure out the sequence of closing characters that complete all open chunks in the line.
 
-The size of a basin is the number of locations within the basin, including the low point. The example above has four basins.
+You can only use closing characters (), ], }, or >), and you must add them in the correct order so that only legal pairs are formed and all chunks end up closed.
 
-The top-left basin, size 3:
-
-```
-2199943210
-3987894921
-9856789892
-8767896789
-9899965678
-```
-
-The top-right basin, size 9:
+In the example above, there are five incomplete lines:
 
 ```
-2199943210
-3987894921
-9856789892
-8767896789
-9899965678
+[({(<(())[]>[[{[]{<()<>> - Complete by adding }}]])})].
+[(()[<>])]({[<{<<[]>>( - Complete by adding )}>]}).
+(((({<>}<{<{<>}{[]{[]{} - Complete by adding }}>}>)))).
+{<[[]]>}<{[{[{[]{()[[[] - Complete by adding ]]}}]}]}>.
+<{([{{}}[<[[[<>{}]]]>[]] - Complete by adding ])}>.
 ```
 
-The middle basin, size 14:
+Did you know that autocomplete tools also have contests? It's true! The score is determined by considering the completion string character-by-character. Start with a total score of 0. Then, for each character, multiply the total score by 5 and then increase the total score by the point value given for the character in the following table:
 
 ```
-2199943210
-3987894921
-9856789892
-8767896789
-9899965678
+): 1 point.
+]: 2 points.
+}: 3 points.
+>: 4 points.
+```
+So, the last completion string above - ])}> - would be scored as follows:
+
+Start with a total score of 0.
+Multiply the total score by 5 to get 0, then add the value of ] (2) to get a new total score of 2.
+Multiply the total score by 5 to get 10, then add the value of ) (1) to get a new total score of 11.
+Multiply the total score by 5 to get 55, then add the value of } (3) to get a new total score of 58.
+Multiply the total score by 5 to get 290, then add the value of > (4) to get a new total score of 294.
+The five lines' completion strings have total scores as follows:
+
+```
+}}]])})] - 288957 total points.
+)}>]}) - 5566 total points.
+}}>}>)))) - 1480781 total points.
+]]}}]}]}> - 995444 total points.
+])}> - 294 total points.
 ```
 
-The bottom-right basin, size 9:
+Autocomplete tools are an odd bunch: the winner is found by sorting all of the scores and then taking the middle score. (There will always be an odd number of scores to consider.) In this example, the middle score is 288957 because there are the same number of scores smaller and larger than it.
 
-```
-2199943210
-3987894921
-9856789892
-8767896789
-9899965678
-```
-
-Find the three largest basins and multiply their sizes together. In the above example, this is 9 _ 14 _ 9 = 1134.
-
-What do you get if you multiply together the sizes of the three largest basins?
+Find the completion string for each incomplete line, score the completion strings, and sort the scores. What is the middle score?
